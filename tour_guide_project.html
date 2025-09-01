@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Tour Guide</title>
+  <style>
+    :root {
+      --accent: #b3500a;
+      --accent-dark: #8c3e08;
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: url('download.png') no-repeat center center fixed;
+      background-size: cover;
+      color: white;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .navbar {
+      background-color: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(4px);
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 0;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .navbar a {
+      color: white;
+      padding: 10px 16px;
+      text-decoration: none;
+      cursor: pointer;
+      border-radius: 8px;
+      font-weight: 600;
+    }
+
+    .navbar a:hover {
+      background-color: rgba(187, 105, 11, 0.903);
+    }
+
+    .page {
+      text-align: center;
+      display: none;
+      padding: 24px;
+      max-width: 1200px;
+      margin: 24px auto;
+      box-sizing: border-box;
+    }
+
+    .active {
+      display: block;
+    }
+
+    #welcome {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(to top left, #524011, #d5a509);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: 24px;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      color: white;
+      animation: gradient 1s ease infinite;
+    }
+
+    #welcome.hidden {
+      opacity: 0;
+      pointer-events: none;
+      display: none;
+    }
+
+    #welcome h1 {
+      font-size: clamp(1.6rem, 3.5vw, 2.6rem);
+      margin: 0;
+      letter-spacing: 0.6px;
+    }
+
+    .card {
+      background: rgba(190, 127, 26, 0.95);
+      padding: 18px;
+      margin: 14px auto;
+      border-radius: 10px;
+      box-shadow: 0 30px 20px rgba(0, 0, 0, 0.25);
+      color: #ffffff;
+      max-width: 1000px;
+      text-align: left;
+      font-family: 'Lucida Sans';
+      font-size: 20px;
+    }
+
+    .card h4 {
+      margin: 0;
+    }
+
+    video {
+      display: block;
+      margin: 20px auto;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      max-width: 1100px;
+      margin: 0 auto;
+      background: rgba(138, 120, 78, 0.95);
+      color: #111;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    td {
+      vertical-align: top;
+      padding: 14px;
+      width: 50%;
+    }
+
+    table img {
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+      float: right;
+      margin-left: 12px;
+    }
+
+    table h2 {
+      margin: 6px 0;
+      color: #060606;
+    }
+
+    table p {
+      color: #060606;
+      margin: 6px 0;
+    }
+
+    .map {
+      width: 100%;
+      height: 650px;
+      border: 0;
+      border-radius: 10px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+      color: #fff;
+    }
+
+    form.account {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 20px;
+      border-radius: 12px;
+      max-width: 360px;
+      margin: 12px auto;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+      color: #111;
+    }
+
+    .form-row {
+      margin-bottom: 10px;
+      text-align: left;
+    }
+
+    .form-row label {
+      display: block;
+      font-size: 0.95rem;
+      margin-bottom: 6px;
+      color: #333;
+    }
+
+    .form-row input {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      font-size: 1rem;
+    }
+
+    .form-row input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 6px rgba(179, 80, 10, 0.15);
+    }
+
+    .btn-save {
+      display: inline-block;
+      background: var(--accent);
+      color: white;
+      padding: 10px 16px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      width: 100%;
+    }
+
+    .btn-save:hover {
+      background: var(--accent-dark);
+    }
+
+    @media (max-width:720px) {
+      td {
+        display: block;
+        width: 100%;
+      }
+
+      table img {
+        float: none;
+        display: block;
+        margin: 0 auto 12px auto;
+      }
+
+      .page {
+        padding: 16px;
+      }
+
+      .map {
+        height: 520px;
+      }
+    }
+
+
+    .video-box video {
+      width: 100%;
+      border-radius: 10px;
+    }
+
+
+
+
+    .video-scroll {
+      display: flex;
+      flex-direction: column;
+      overflow-y: scroll;
+      height: 400px;
+      width: 600px;
+      margin: 0 auto;
+      border: 2px solid #fff;
+      border-radius: 12px;
+      scroll-snap-type: y mandatory;
+    }
+
+    .video-box {
+      flex: 0 0 100%;
+      scroll-snap-align: start;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+    }
+
+    .video-box video {
+      max-height: 100%;
+      max-width: 100%;
+      border-radius: 10px;
+    }
+
+    .video-carousel {
+      position: relative;
+      width: 600px;
+      height: 400px;
+      margin: 0 auto;
+      overflow: hidden;
+      border-radius: 12px;
+      border: 2px solid #fff;
+    }
+
+    .video-track {
+      display: flex;
+      transition: transform 0.5s ease-in-out;
+      height: 100%;
+    }
+
+    .video-slide {
+      min-width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .video-slide video {
+      max-height: 100%;
+      max-width: 100%;
+      border-radius: 10px;
+    }
+
+    .carousel-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255, 255, 255, 0.6);
+      border: none;
+      padding: 8px 12px;
+      cursor: pointer;
+      border-radius: 50%;
+      font-size: 18px;
+    }
+
+    .carousel-btn:hover {
+      background: rgba(255, 255, 255, 0.9);
+    }
+
+    .carousel-btn.prev {
+      left: 10px;
+    }
+
+    .carousel-btn.next {
+      right: 10px;
+    }
+
+    .carousel-dots {
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    .carousel-dots button {
+      border: none;
+      background: #bbb;
+      border-radius: 50%;
+      width: 12px;
+      height: 12px;
+      margin: 0 5px;
+      cursor: pointer;
+    }
+
+    .carousel-dots button.active {
+      background: #007bff;
+    }
+
+    video {
+      width: 640px;
+      height: 360px;
+      object-fit: cover;
+    }
+  </style>
+</head>
+
+<body>
+  <div aria-label="Welcome message" id="welcome" role="region">
+    <h1>Welcome to Your Tour Guide</h1>
+  </div>
+  <div aria-label="Main navigation" class="navbar" role="navigation">
+    <a onclick="changePage('home')">Home</a>
+    <a onclick="changePage('details')">Details</a>
+    <a onclick="changePage('distance')">Distance</a>
+    <a onclick="changePage('youraccount')">Your Account</a>
+  </div>
+  <main class="page" id="home" role="main">
+    <video controls="" playsinline="">
+      <source src="dr.mp4" type="video/mp4" />
+      Your browser does not support video.
+    </video>
+    <section class="card">
+      <h4><strong>Dr. Zahi Hawass – Egypt’s Famous Archaeologist</strong></h4>
+      <p>Dr. Zahi Hawass is one of the most well-known archaeologists in the world. Born in Damietta, Egypt, in 1947,
+        he developed a passion for ancient history at an early age. Hawass has served as Egypt’s Minister of Antiquities
+        and worked for decades to preserve and promote the country’s rich heritage. He has led many important
+        excavations,
+        including discoveries in the Valley of the Kings, the Giza Pyramids, and the tombs of workers who built the
+        pyramids.
+        Known for his trademark wide-brimmed hat and energetic personality, Dr. Hawass has appeared in documentaries,
+        lectures, and books to share Egypt’s history with the public. His work has inspired people worldwide to
+        appreciate
+        and protect ancient monuments.</p>
+    </section>
+    <div class="video-carousel">
+      <div class="video-track">
+        <div class="video-slide"><video controls="" src="الاقصر.mp4"></video></div>
+        <div class="video-slide"><video controls="" src="الاهرامات.mp4"></video></div>
+        <div class="video-slide"><video controls="" src="الصحراء البيضه.mp4"></video></div>
+        <div class="video-slide"><video controls="" src="الغردقه.mp4"></video></div>
+        <div class="video-slide"><video controls="" src="المتحف المصري.mp4"></video></div>
+        <div class="video-slide"><video controls="" src="جبل موسى.mp4"></video></div>
+        <div class="video-slide"><video controls="" src="حتشبسوت.mp4"></video></div>
+        <div class="video-slide"><video controls="" src="دهب.mp4"></video></div>
+        <div class="video-slide"><video controls="" src="شرم الشيخ.mp4"></video></div>
+        <div class="video-slide"><video controls="" src="مكتبه اسكندريه.mp4"></video></div>
+        <div class="video-slide"><video controls="" src="مصر.mp4"></video></div>
+      </div>
+      <button class="carousel-btn prev">❮</button>
+      <button class="carousel-btn next">❯</button>
+    </div>
+
+  </main>
+  <section class="page" id="details">
+    <div class="table-wrap">
+      <table>
+        <tr>
+          <td>
+            <img alt="pyramids" src="pyramids.jpg" />
+            <h2>Pyramids of Giza</h2>
+            <p><strong>Date of Construction:</strong> Around 2580–2560 BC</p>
+            <p><strong>Governorate:</strong> Giza</p>
+            <p>The Pyramids of Giza are among the Seven Wonders of the Ancient World. They were built as tombs for the
+              pharaohs Khufu, Khafre, and Menkaure.
+              The Great Pyramid was the tallest man-made structure for over 3,800 years. Nearby lies the Great Sphinx.
+              They remain symbols of ancient Egyptian engineering genius.</p>
+          </td>
+          <td>
+            <img alt="white_desert" src="white_desert.jpg" />
+            <h2>White Desert</h2>
+            <p><strong>Date of Formation:</strong> Prehistoric times</p>
+            <p><strong>Governorate:</strong> New Valley</p>
+            <p>The White Desert is known for its surreal white chalk rock formations. These shapes were formed by wind
+              erosion over thousands of years.
+              The desert is a protected area and popular for camping. It offers stunning views under the moonlight. It
+              is a favorite spot for photographers and adventurers.</p>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <img alt="abu_simbel" src="abu_simbel.jpg" />
+            <h2>Abu Simbel</h2>
+            <p><strong>Date of Construction:</strong> Around 1264 BC</p>
+            <p><strong>Governorate:</strong> Aswan</p>
+            <p>Abu Simbel is a massive rock temple built by Pharaoh Ramses II. Famous for its four colossal statues, the
+              temple aligns with the sun twice a year.
+              It was relocated in the 1960s to save it from flooding caused by the Aswan High Dam. The interior is
+              decorated with scenes of battles and ceremonies.</p>
+          </td>
+          <td>
+            <img alt="alexandria_library" src="alexandria_library.jpg" />
+            <h2>Alexandria Library</h2>
+            <p><strong>Date of Construction:</strong> 2002</p>
+            <p><strong>Governorate:</strong> Alexandria</p>
+            <p>The Bibliotheca Alexandrina is a modern revival of the ancient Library of Alexandria. It is a major
+              cultural center housing millions of books.
+              The site includes museums, a planetarium, and art galleries. Its architecture symbolizes the sun rising
+              over the Mediterranean.</p>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <img alt="citadel" src="citadel.jpg" />
+            <h2>Citadel of Saladin</h2>
+            <p><strong>Date of Construction:</strong> 1176 AD</p>
+            <p><strong>Governorate:</strong> Cairo</p>
+            <p>The Citadel of Saladin was built to protect Cairo from Crusader attacks. It served as Egypt’s seat of
+              government for centuries.
+              The site houses the famous Mosque of Muhammad Ali. Its walls and towers offer panoramic views of Cairo.
+            </p>
+          </td>
+          <td>
+            <img alt="dahab" src="dahab.jpg" />
+            <h2>Dahab</h2>
+            <p><strong>Date of Establishment:</strong> Ancient fishing village, modern resort since 1980s</p>
+            <p><strong>Governorate:</strong> South Sinai</p>
+            <p>Dahab is a small town on the southeast coast of the Sinai Peninsula. Known for diving and snorkeling, it
+              attracts tourists from around the world.</p>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <img alt="egyptian_museum" src="egyptian_museum.jpg" />
+            <h2>Egyptian Museum</h2>
+            <p><strong>Date of Construction:</strong> 1902</p>
+            <p><strong>Governorate:</strong> Cairo</p>
+            <p>The Egyptian Museum houses the world’s largest collection of Pharaonic antiquities. It includes treasures
+              from the tomb of Tutankhamun.</p>
+          </td>
+          <td>
+            <img alt="fayoum_oasis" src="fayoum_oasis.jpg" />
+            <h2>Fayoum Oasis</h2>
+            <p><strong>Date of Development:</strong> Ancient times</p>
+            <p><strong>Governorate:</strong> Fayoum</p>
+            <p>The Fayoum Oasis is Egypt’s largest oasis, famous for Lake Qarun. It has been inhabited since ancient
+              times.</p>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <img alt="hatshepsut_temple" src="hatshepsut_temple.jpg" />
+            <h2>Hatshepsut Temple</h2>
+            <p><strong>Date of Construction:</strong> 15th century BC</p>
+            <p><strong>Governorate:</strong> Luxor</p>
+            <p>The Mortuary Temple of Hatshepsut is dedicated to one of Egypt’s few female pharaohs.</p>
+          </td>
+          <td>
+            <img alt="hurghada" src="hurghada.jpg" />
+            <h2>Hurghada</h2>
+            <p><strong>Date of Development:</strong> 20th century</p>
+            <p><strong>Governorate:</strong> Red Sea</p>
+            <p>Hurghada is a popular Red Sea resort town. It is known for its sandy beaches and coral reefs.</p>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <img alt="karnak_temple" src="karnak_temple.jpg" />
+            <h2>Karnak Temple</h2>
+            <p><strong>Date of Construction:</strong> Started around 2000 BC</p>
+            <p><strong>Governorate:</strong> Luxor</p>
+            <p>Karnak Temple is the largest religious complex in ancient Egypt. The Hypostyle Hall is one of its most
+              impressive features.</p>
+          </td>
+          <td>
+            <img alt="louvre_museum" src="louvre_museum.jpg" />
+            <h2>Louvre Museum (Egyptian Section)</h2>
+            <p><strong>Date of Collection:</strong> Established 1793</p>
+            <p><strong>Location:</strong> Paris, France</p>
+            <p>The Louvre Museum houses a significant collection of Egyptian antiquities.</p>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <img alt="luxor_city" src="luxor_city.jpg" />
+            <h2>Luxor City</h2>
+            <p><strong>Date of Establishment:</strong> Ancient Thebes</p>
+            <p><strong>Governorate:</strong> Luxor</p>
+            <p>Luxor is often called the world’s greatest open-air museum. It is home to the Karnak and Luxor temples.
+            </p>
+          </td>
+          <td>
+            <img alt="montaza_palace" src="montaza_palace.jpg" />
+            <h2>Montaza Palace</h2>
+            <p><strong>Date of Construction:</strong> 1892</p>
+            <p><strong>Governorate:</strong> Alexandria</p>
+            <p>Montaza Palace was built as a summer residence for the Egyptian royal family.</p>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <img alt="mount_sinai" src="mount_sinai.jpg" />
+            <h2>Mount Sinai</h2>
+            <p><strong>Date of Religious Significance:</strong> Biblical times</p>
+            <p><strong>Governorate:</strong> South Sinai</p>
+            <p>Mount Sinai is believed to be the place where Moses received the Ten Commandments.</p>
+          </td>
+          <td>
+            <img alt="nubian_museum" src="nubian_museum.jpg" />
+            <h2>Nubian Museum</h2>
+            <p><strong>Date of Opening:</strong> 1997</p>
+            <p><strong>Governorate:</strong> Aswan</p>
+            <p>The Nubian Museum showcases the culture and history of Nubia.</p>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <img alt="philae_temple" src="philae_temple.jpg" />
+            <h2>Philae Temple</h2>
+            <p><strong>Date of Construction:</strong> 380 BC</p>
+            <p><strong>Governorate:</strong> Aswan</p>
+            <p>Philae Temple is dedicated to the goddess Isis. It was moved to Agilkia Island to save it from flooding.
+            </p>
+          </td>
+          <td>
+            <img alt="saint_catherine" src="saint_catherine.jpg" />
+            <h2>Saint Catherine</h2>
+            <p><strong>Date of Establishment:</strong> 6th century AD</p>
+            <p><strong>Governorate:</strong> South Sinai</p>
+            <p>Saint Catherine’s Monastery is one of the oldest working Christian monasteries.</p>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <img alt="sharm_sheikh" src="sharm_sheikh.jpg" />
+            <h2>Sharm El Sheikh</h2>
+            <p><strong>Date of Development:</strong> Late 20th century</p>
+            <p><strong>Governorate:</strong> South Sinai</p>
+            <p>Sharm El Sheikh is a major tourist resort on the Red Sea. It is famous for diving and snorkeling.</p>
+          </td>
+          <td>
+            <img alt="siwa_oasis" src="siwa_oasis.jpg" />
+            <h2>Siwa Oasis</h2>
+            <p><strong>Date of Inhabitation:</strong> Ancient times</p>
+            <p><strong>Governorate:</strong> Matrouh</p>
+            <p>Siwa Oasis is known for its unique culture and language.</p>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <img alt="valley_kings" src="valley_kings.jpg" />
+            <h2>Valley of the Kings</h2>
+            <p><strong>Date of Use:</strong> 16th to 11th century BC</p>
+            <p><strong>Governorate:</strong> Luxor</p>
+            <p>The Valley of the Kings served as the burial site for New Kingdom pharaohs. It contains over 60 tombs.
+            </p>
+          </td>
+          <td>
+            <img alt="wax_museum" src="wax_museum.jpg" />
+            <h2>Wax Museum</h2>
+            <p><strong>Date of Opening:</strong> 20th century</p>
+            <p><strong>Governorate:</strong> Giza</p>
+            <p>The Wax Museum in Egypt displays lifelike wax figures of historical and cultural figures.</p>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </section>
+  <section class="page" id="distance">
+    <a class="map" href="map.html">see the Distance</a>
+  </section>
+  <section class="page" id="youraccount">
+    <h2 style="color:#fff">Your Account</h2>
+    <form class="account" onsubmit="event.preventDefault(); alert('تم حفظ حسابك بنجاج');">
+      <div class="form-row">
+        <label for="username">Username</label>
+        <input id="username" name="username" placeholder="Username" required="" type="text" />
+      </div>
+      <div class="form-row">
+        <label for="email">Email</label>
+        <input id="email" name="email" placeholder="Email" required="" type="email" />
+      </div>
+      <div class="form-row">
+        <label for="password">Password</label>
+        <input id="password" name="password" placeholder="Password" required="" type="password" />
+      </div>
+      <button class="btn-save" type="submit">Save</button>
+    </form>
+  </section>
+  <script>
+    function changePage(page) {
+      document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+      const target = document.getElementById(page);
+      if (target) target.classList.add('active');
+      history.replaceState(null, '', '#' + page);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    window.addEventListener('load', () => {
+      const welcome = document.getElementById('welcome');
+      const hash = window.location.hash.substring(1);
+      setTimeout(() => {
+        welcome.classList.add('hidden');
+        setTimeout(() => {
+          welcome.style.display = 'none';
+        }, 450);
+        if (hash && document.getElementById(hash)) {
+          changePage(hash);
+        } else {
+          changePage('home');
+        }
+      }, 1000);
+    });
+
+    window.addEventListener('hashchange', () => {
+      const hash = window.location.hash.substring(1);
+      if (document.getElementById('welcome') && !document.getElementById('welcome').classList.contains('hidden')) {
+        return;
+      }
+      if (hash && document.getElementById(hash)) {
+        changePage(hash);
+      }
+    });
+
+    const track = document.querySelector('.video-track');
+    const slides = Array.from(track.children);
+    const nextButton = document.querySelector('.carousel-btn.next');
+    const prevButton = document.querySelector('.carousel-btn.prev');
+
+    let currentSlide = 0;
+
+    function updateCarousel() {
+      track.style.transform = 'translateX(' + (-currentSlide * 100) + '%)';
+    }
+
+    nextButton.addEventListener('click', () => {
+      currentSlide = (currentSlide + 1) % slides.length;
+      updateCarousel();
+    });
+
+    prevButton.addEventListener('click', () => {
+      currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+      updateCarousel();
+    });
+
+    document.querySelectorAll('video').forEach(video => {
+      video.addEventListener('play', () => {
+        document.querySelectorAll('video').forEach(v => {
+          if (v !== video) v.pause();
+        });
+      });
+    });
+  </script>
+</body>
+
+</html>
